@@ -314,4 +314,4 @@ def tif_to_gdf(tif):
         print(f"Error al convertir el raster a GeoDataFrame: {e}")
         raise
 
-# otra funcion ..
+# other function ..
