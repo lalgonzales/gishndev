@@ -104,5 +104,5 @@ Before you submit a pull request, check that it meets these guidelines:
     Put your new functionality into a function with a docstring, and add
     the feature to the list in README.rst.
 3.  The pull request should work for Python 3.8 and later, and
-    for PyPy. Check <https://github.com/lalgonzales/gishndev/pull_requests> and make sure that the tests pass for all
+    for PyPy. Check <https://github.com/lalgonzales/gishndev/pulls> and make sure that the tests pass for all
     supported Python versions.
