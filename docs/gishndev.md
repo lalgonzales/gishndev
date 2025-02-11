@@ -1,4 +1,0 @@
- 
-# gishndev module
-
-::: gishndev.gishndev
