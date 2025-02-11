@@ -9,7 +9,7 @@
 **A package to developed tools to processing gis data**
 
 
--   Free software: MIT license
+-   Free software: MIT License
 -   Documentation: <https://lalgonzales.github.io/gishndev>
     
 
