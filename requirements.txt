@@ -1,8 +1,8 @@
 geemap
-leafmap
-rasterio
-shapely
 geopandas
+leafmap
 localtileserver
+rasterio
 rioxarray
+shapely
 
