@@ -11,7 +11,7 @@
 
 -   Free software: MIT License
 -   Documentation: <https://lalgonzales.github.io/gishndev>
-    
+
 
 ## Features
 
