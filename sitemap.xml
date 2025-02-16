@@ -2,38 +2,42 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
          <loc>https://lalgonzales.github.io/gishndev/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/changelog/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/common/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/contributing/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/faq/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
+    </url>
+    <url>
+         <loc>https://lalgonzales.github.io/gishndev/gee_s2_funcs/</loc>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/gishndev/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/installation/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/usage/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
     <url>
          <loc>https://lalgonzales.github.io/gishndev/examples/intro/</loc>
-         <lastmod>2025-02-15</lastmod>
+         <lastmod>2025-02-16</lastmod>
     </url>
 </urlset>
