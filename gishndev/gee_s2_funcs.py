@@ -1,5 +1,5 @@
-# gee_s2_funcs.py
-# Funciones para trabajar con imágenes satelitales y la gee
+"""This module contains functions for working with satellite images and Google Earth Engine."""
+
 import os
 import ee
 import geemap
@@ -14,26 +14,28 @@ from rasterio.features import shapes
 current_dir = os.path.dirname(os.path.abspath(__file__))
 
 # Leer los indices, constantes y bandas de spectral
-with open(os.path.join(current_dir, "spectral_indices.json")) as f:
+with open(os.path.join(current_dir, "spectral_indices.json"), encoding="utf-8") as f:
     spectral = json.load(f)
     spectral_indices = spectral["spectral_indices"]
 
-with open(os.path.join(current_dir, "spectral_constants.json")) as f:
+with open(os.path.join(current_dir, "spectral_constants.json"), encoding="utf-8") as f:
     spectral_constants = json.load(f)
 
-with open(os.path.join(current_dir, "spectral_bands.json")) as f:
+with open(os.path.join(current_dir, "spectral_bands.json"), encoding="utf-8") as f:
     spectral_bands = json.load(f)
 
 
 def mask_s2_clouds(img):
     """
     Masks clouds and cloud shadows in Sentinel-2 images using the SCL band, QA60 band, and cloud probability.
+
     This function applies a series of masks to a Sentinel-2 image to remove pixels that are likely to be affected by clouds, cloud shadows, cirrus, or snow. It uses the Scene Classification Layer (SCL) band, the QA60 band, and optionally the cloud probability band from the COPERNICUS/S2_CLOUD_PROBABILITY collection.
 
-    :param image: ee.Image
-        The Sentinel-2 image to be masked.
-    :return: ee.Image
-        The masked Sentinel-2 image with values scaled between 0 and 1.
+    Args:
+        img (ee.Image): The Sentinel-2 image to be masked.
+
+    Returns:
+        ee.Image: The masked Sentinel-2 image with values scaled between 0 and 1.
     """
     # Load the cloud probability image collection
     cloud_prob_collection = (
@@ -86,13 +88,13 @@ def mask_s2_clouds(img):
 
 def create_gdfbounds_from_tif(tif_path):
     """
-    Crea un GeoDataFrame a partir de los límites de un archivo TIFF.
+    Creates a GeoDataFrame from the bounds of a TIFF file.
 
     Args:
-        tif_path (str): Ruta al archivo TIFF.
+        tif_path (str): Path to the TIFF file.
 
     Returns:
-        gpd.GeoDataFrame: GeoDataFrame con un polígono que representa los límites del archivo TIFF.
+        gpd.GeoDataFrame: GeoDataFrame with a polygon representing the bounds of the TIFF file.
     """
     # Leer el archivo TIFF
     with rasterio.open(tif_path) as src:
@@ -111,31 +113,36 @@ def create_gdfbounds_from_tif(tif_path):
 def apply_scale_factorsL8(img):
     """
     Applies scale factors to Landsat 8 imagery bands.
+
     This function scales the optical and thermal bands of a Landsat 8 image.
     The optical bands are scaled by multiplying by 0.0000275 and adding -0.2.
     The thermal bands are scaled by multiplying by 0.00341802 and adding 149.0.
 
-    :param image: ee.Image
-        The input Landsat 8 image to which the scale factors will be applied.
-    :return: ee.Image
-        The image with scaled optical and thermal bands.
+    Args:
+        img (ee.Image): The input Landsat 8 image to which the scale factors will be applied.
+
+    Returns:
+        ee.Image: The image with scaled optical and thermal bands.
     """
     optical_bands = img.select("SR_B.").multiply(0.0000275).add(-0.2)
     thermal_bands = img.select("ST_B.*").multiply(0.00341802).add(149.0)
     return img.addBands(optical_bands, None, True).addBands(thermal_bands, None, True)
 
 
-def index_info(index, properties=["formula"]):
+def index_info(index, properties=None):
     """
     Retrieve and print information about specified spectral indices.
 
-    :param index: A single index or a list of indices to retrieve information for.
-    :type index: str or list of str
-    :param properties: A list of properties to retrieve for each index. Default is ["formula"].
-                       Possible properties include 'application_domain', 'bands', 'contributor',
-                       'date_of_addition', 'formula', 'long_name', 'platforms', 'reference', 'short_name'.
-    :type properties: list of str
+    Args:
+        index (str or list of str): A single index or a list of indices to retrieve information for.
+        properties (list of str, optional): A list of properties to retrieve for each index. Default is ["formula"].
+                                            Possible properties include 'application_domain', 'bands', 'contributor',
+                                            'date_of_addition', 'formula', 'long_name', 'platforms',
+                                            'reference', 'short_name'.
     """
+    if properties is None:
+        properties = ["formula"]
+
     if not isinstance(index, list):
         index = [index]
 
@@ -144,8 +151,8 @@ def index_info(index, properties=["formula"]):
 
     for idx in index:
         properties_dic = {}
-        for property in properties:
-            properties_dic[property] = spectral_indices[idx][property]
+        for prop in properties:
+            properties_dic[prop] = spectral_indices[idx][prop]
         print(f"'{idx}' info:")
         print(properties_dic)
 
@@ -154,14 +161,13 @@ def compute_index(img, index, params):
     """
     Computes spectral indices for the given image and adds them as bands.
 
-    :param img: The input image to which the spectral indices will be added.
-    :type img: ee.Image
-    :param index: A list of spectral indices to compute. If a single index is provided, it will be converted to a list.
-    :type index: list or str
-    :param params: A dictionary of parameters required for computing the indices.
-    :type params: dict
-    :return: The input image with the computed spectral indices added as bands.
-    :rtype: ee.Image
+    Args:
+        img (ee.Image): The input image to which the spectral indices will be added.
+        index (list or str): A list of spectral indices to compute. If a single index is provided, it will be converted to a list.
+        params (dict): A dictionary of parameters required for computing the indices.
+
+    Returns:
+        ee.Image: The input image with the computed spectral indices added as bands.
     """
     if not isinstance(index, list):
         index = [index]
@@ -177,12 +183,12 @@ def params_index_s2(index, img):
     """
     Processes spectral indices and returns a dictionary of parameters with their corresponding values or bands.
 
-    :param index: A list of spectral index names or a single spectral index name.
-    :type index: list or str
-    :param img: An image object from which bands are selected.
-    :type img: ee.Image
-    :return: A dictionary where keys are parameter names and values are either constants or selected bands from the image.
-    :rtype: dict
+    Args:
+        index (list or str): A list of spectral index names or a single spectral index name.
+        img (ee.Image): An image object from which bands are selected.
+
+    Returns:
+        dict: A dictionary where keys are parameter names and values are either constants or selected bands from the image.
     """
     # Convertir a lista sino lo es``
     if not isinstance(index, list):
@@ -231,10 +237,12 @@ def extract_values_to_point_per_part(
     """
     Extracts values to points for each part of the samples and saves the output to a specified directory.
 
-    :param samples: A GeoDataFrame containing the sample points.
-    :param stack: The image stack from which to extract values.
-    :param num_samples: The number of samples to process in each part.
-    :param out_dir: The output directory where the results will be saved.
+    Args:
+        samples (gpd.GeoDataFrame): A GeoDataFrame containing the sample points.
+        stack (ee.Image): The image stack from which to extract values.
+        num_samples (int): The number of samples to process in each part.
+        out_dir (str): The output directory where the results will be saved.
+        out_file_name (str): The base name for the output files.
     """
     # Extract the basename of the input samples
     out_fc_base = f"{out_dir}/{out_file_name}"
@@ -254,12 +262,14 @@ def get_sampled_size(samples, stack, n_samples):
     """
     Get the size of the sampled regions from a stack based on a subset of samples.
 
-    :param samples: A pandas DataFrame containing the sample points.
-    :param stack: An Earth Engine Image or ImageCollection to sample from.
-    :param n_samples: The number of samples to take from the samples DataFrame.
-    :return: The size of the sampled regions as an integer.
-    """
+    Args:
+        samples (pd.DataFrame): A pandas DataFrame containing the sample points.
+        stack (ee.Image or ee.ImageCollection): An Earth Engine Image or ImageCollection to sample from.
+        n_samples (int): The number of samples to take from the samples DataFrame.
 
+    Returns:
+        int: The size of the sampled regions.
+    """
     subset = samples.iloc[0:n_samples]
     subset_ee = geemap.geopandas_to_ee(subset)
     sampled = stack.sampleRegions(collection=subset_ee, scale=10, geometries=True)
@@ -271,16 +281,14 @@ def ee_to_df_sampled(samples, stack, n_samples):
     Subsets the given samples DataFrame, converts it to an Earth Engine FeatureCollection,
     samples the given stack Image using the subset, and returns the sampled data as a DataFrame.
 
-    :param samples: pandas.DataFrame
-        A DataFrame containing the sample points with their respective coordinates.
-    :param stack: ee.Image
-        An Earth Engine Image object from which to sample the data.
-    :param n_samples: int
-        The number of samples to subset from the samples DataFrame.
-    :return: pandas.DataFrame
-        A DataFrame containing the sampled data with properties from the Earth Engine Image.
-    """
+    Args:
+        samples (pd.DataFrame): A DataFrame containing the sample points with their respective coordinates.
+        stack (ee.Image): An Earth Engine Image object from which to sample the data.
+        n_samples (int): The number of samples to subset from the samples DataFrame.
 
+    Returns:
+        pd.DataFrame: A DataFrame containing the sampled data with properties from the Earth Engine Image.
+    """
     subset = samples.iloc[0:n_samples]
     subset_ee = geemap.geopandas_to_ee(subset)
     sampled = stack.sampleRegions(collection=subset_ee, scale=10, geometries=True)
@@ -296,17 +304,20 @@ def ee_to_df_sampled(samples, stack, n_samples):
 def tif_to_gdf(tif):
     """
     Converts a TIFF raster file to a GeoDataFrame.
+
     This function reads a TIFF file, processes its raster data, and converts it into a GeoDataFrame.
     The raster data is converted to float32 if it is not in a compatible data type. Only the pixels
     with values greater than 0 are considered for conversion to geometries.
 
-    :param tif: str
-        The file path to the TIFF raster file.
-    :return: geopandas.GeoDataFrame
-        A GeoDataFrame containing the geometries and their associated values extracted from the raster.
-    :raises Exception: If there is an error in reading the TIFF file or converting it to a GeoDataFrame.
-    """
+    Args:
+        tif (str): The file path to the TIFF raster file.
 
+    Returns:
+        gpd.GeoDataFrame: A GeoDataFrame containing the geometries and their associated values extracted from the raster.
+
+    Raises:
+        Exception: If there is an error in reading the TIFF file or converting it to a GeoDataFrame.
+    """
     # Crear el nombre del archivo tif
     try:
         with rasterio.open(tif) as src:
