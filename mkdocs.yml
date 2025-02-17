@@ -84,4 +84,4 @@ nav:
     - API Reference:
           - gishndev module: gishndev.md
           - common module: common.md
-          - gee s2 module: gee_s2_funcs.md
+          - gee_s2 module: gee_s2_funcs.md
