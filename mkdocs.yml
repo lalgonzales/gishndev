@@ -81,6 +81,7 @@ nav:
     - Report Issues: https://github.com/lalgonzales/gishndev/issues
     - Examples:
         - examples/intro.ipynb
+        - examples/s2_composite.ipynb
     - API Reference:
           - gishndev module: gishndev.md
           - common module: common.md
