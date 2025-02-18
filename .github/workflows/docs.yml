@@ -21,11 +21,14 @@ jobs:
                   pip install --user --no-cache-dir Cython
                   pip install --user -r requirements.txt -r requirements_dev.txt
                   pip install .
+
             - name: Set up Earth Engine credentials
               env:
-                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+                  GEE_SERVICE_ACCOUNT_KEY: ${{ secrets.GEE_SERVICE_ACCOUNT_KEY }}
               run: |
-                  python .github/ee_token.py
+                  echo "$GEE_SERVICE_ACCOUNT_KEY" > gee_service_account.json
+                  export GOOGLE_APPLICATION_CREDENTIALS=gee_service_account.json
+                  python -c "import ee; ee.Initialize()"
 
             - name: Discover typos with codespell
               run: |
@@ -38,4 +41,3 @@ jobs:
             - name: Build and deploy docs
               run: |
                   mkdocs gh-deploy --force
-
