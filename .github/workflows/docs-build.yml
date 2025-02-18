@@ -28,7 +28,12 @@ jobs:
               run: |
                   pip install --no-cache-dir Cython
                   pip install -r requirements.txt -r requirements_dev.txt
-                  pip install .
+                  pip install mkdocs-material mkdocstrings mkdocs-jupyter geemap
+            - name: Set up Earth Engine credentials
+              env:
+                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+              run: |
+                  python .github/ee_token.py
             - name: Discover typos with codespell
               run: codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,*.pdf,./.git" --ignore-words-list="aci,acount,hist"
             - name: PKG-TEST

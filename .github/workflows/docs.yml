@@ -20,12 +20,23 @@ jobs:
                   python -m pip install --upgrade pip
                   pip install --user --no-cache-dir Cython
                   pip install --user -r requirements.txt -r requirements_dev.txt
-                  pip install .
+                  pip install mkdocs-material mkdocstrings mkdocs-jupyter geemap
+
+            - name: Set up Earth Engine credentials
+              env:
+                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+              run: |
+                  python .github/ee_token.py
+
             - name: Discover typos with codespell
               run: |
                   codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,./.git" --ignore-words-list="aci,hist"
+
             - name: PKG-TEST
               run: |
                   python -m unittest discover tests/
-            - run: mkdocs gh-deploy --force
+
+            - name: Build and deploy docs
+              run: |
+                  mkdocs gh-deploy --force
 
