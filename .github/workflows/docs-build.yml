@@ -39,7 +39,7 @@ jobs:
                   export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gee_service_account.json
 
             - name: Run Earth Engine credentials setup script
-              run: python ../../.github/ee_token.py
+              run: python github/ee_token.py
 
             # - name: Discover typos with codespell
             #   run: codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,*.pdf,./.git" --ignore-words-list="aci,acount,hist"
