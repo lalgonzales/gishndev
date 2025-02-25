@@ -25,7 +25,7 @@ jobs:
             #       python -c "from osgeo import gdal"
             #       gdalinfo --version
             - name: List files
-              run: ls -R  # Esto listará todos los archivos y directorios de tu repositorio
+              run: ls -Ra  # Esto listará todos los archivos y directorios de tu repositorio
 
 
             # - name: Install dependencies
