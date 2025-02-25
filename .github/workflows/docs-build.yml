@@ -35,7 +35,7 @@ jobs:
               env:
                   EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
               run: |
-                  echo "$GEE_SERVICE_ACCOUNT_KEY" > gee_service_account.json
+                  echo "$EARTHENGINE_TOKEN" > gee_service_account.json
                   export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gee_service_account.json
 
             - name: Run Earth Engine credentials setup script
