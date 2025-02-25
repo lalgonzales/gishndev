@@ -24,9 +24,9 @@ jobs:
             #   run: |
             #       python -c "from osgeo import gdal"
             #       gdalinfo --version
-            - name: Check current directory
-              run: |
-                pwd  # Esto te mostrará en qué directorio estás trabajando
+            - name: List files
+              run: ls -R  # Esto listará todos los archivos y directorios de tu repositorio
+
 
             # - name: Install dependencies
             #   run: |
