@@ -24,11 +24,9 @@ jobs:
 
             - name: Set up Earth Engine credentials
               env:
-                  GEE_SERVICE_ACCOUNT_KEY: ${{ secrets.EARTHENGINE_TOKEN }}
+                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
               run: |
-                  echo "$GEE_SERVICE_ACCOUNT_KEY" > gee_service_account.json
-                  export GOOGLE_APPLICATION_CREDENTIALS=gee_service_account.json
-                  python -c "import ee; from ee import ServiceAccountCredentials; credentials = ServiceAccountCredentials('your-service-account-email', 'gee_service_account.json'); ee.Initialize(credentials)"
+                  python ../ee_token.py
 
             - name: Discover typos with codespell
               run: |
