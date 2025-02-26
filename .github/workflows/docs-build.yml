@@ -24,32 +24,27 @@ jobs:
               run: |
                   python -c "from osgeo import gdal"
                   gdalinfo --version
+
             - name: Install dependencies
               run: |
                   pip install --no-cache-dir Cython
                   pip install -r requirements.txt -r requirements_dev.txt
                   pip install .
-            - name: Discover typos with codespell
-              run: codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,*.pdf,./.git" --ignore-words-list="aci,acount,hist"
-            - name: PKG-TEST
-              run: |
-                  python -m unittest discover tests/
-            - name: Build docs
-              run: |
-                  mkdocs build
-            # - name: Deploy to Netlify
-            #   uses: nwtgck/actions-netlify@v2.0
-            #   with:
-            #       publish-dir: "./site"
-            #       production-branch: main
 
-            #       github-token: ${{ secrets.GITHUB_TOKEN }}
-            #       deploy-message: "Deploy from GitHub Actions"
-            #       enable-pull-request-comment: true
-            #       enable-commit-comment: false
-            #       overwrites-pull-request-comment: true
-            #   env:
-            #       NETLIFY_AUTH_TOKEN: ${{ secrets.NETLIFY_AUTH_TOKEN }}
-            #       NETLIFY_SITE_ID: ${{ secrets.NETLIFY_SITE_ID }}
-            #   timeout-minutes: 10
+            - name: Run Earth Engine Script
+              env:
+                EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+              run: |
+                # python ee-test-with-oauth2.py
+                python $GITHUB_WORKSPACE/.github/ee_token.py
 
+            # - name: Discover typos with codespell
+            #   run: codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,*.pdf,./.git" --ignore-words-list="aci,acount,hist"
+
+            # - name: PKG-TEST
+            #   run: |
+            #       python -m unittest discover tests/
+
+            # - name: Build docs
+            #   run: |
+            #       mkdocs build
