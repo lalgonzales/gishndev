@@ -7,11 +7,10 @@ stored = json.loads(os.getenv("EARTHENGINE_TOKEN"))
 credentials = google.oauth2.credentials.Credentials(
     None,
     token_uri="https://oauth2.googleapis.com/token",
-    # client_id=stored["client_id"],
-    # client_secret=stored["client_secret"],
-    scopes=stored["scopes"],
-    refresh_token=stored["refresh_token"],
-    quota_project_id=stored["project"],
+    client_id=stored["installed"]["client_id"],
+    client_secret=stored["installed"]["client_secret"],
+    # refresh_token=stored["refresh_token"],
+    quota_project_id=stored["project_id"],
 )
 
 ee.Initialize(credentials=credentials)
