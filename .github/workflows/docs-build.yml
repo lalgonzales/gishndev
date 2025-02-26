@@ -31,15 +31,12 @@ jobs:
             #       pip install -r requirements.txt -r requirements_dev.txt
             #       pip install .
 
-            - name: Set up Earth Engine credentials
+            - name: Run Earth Engine Script
               env:
-                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+                EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
               run: |
-                  echo "$EARTHENGINE_TOKEN" > gee_service_account.json
-                  export GOOGLE_APPLICATION_CREDENTIALS=$(pwd)/gee_service_account.json
-
-            - name: Run Earth Engine credentials setup script
-              run: python $GITHUB_WORKSPACE/.github/ee_token.py
+                # python ee-test-with-oauth2.py
+                python $GITHUB_WORKSPACE/.github/ee_token.py
 
             # - name: Discover typos with codespell
             #   run: codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,*.pdf,./.git" --ignore-words-list="aci,acount,hist"
