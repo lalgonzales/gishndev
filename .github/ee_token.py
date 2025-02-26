@@ -10,7 +10,7 @@ credentials = google.oauth2.credentials.Credentials(
     client_id=stored["installed"]["client_id"],
     client_secret=stored["installed"]["client_secret"],
     # refresh_token=stored["refresh_token"],
-    quota_project_id=stored"installed"]["project_id"],
+    quota_project_id=stored["installed"]["project_id"],
 )
 
 ee.Initialize(credentials=credentials)
