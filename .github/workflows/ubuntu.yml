@@ -9,6 +9,8 @@ on:
             - master
 
 name: Linux build
+permissions:
+    contents: read
 jobs:
     py-check:
         runs-on: ${{ matrix.config.os }}
