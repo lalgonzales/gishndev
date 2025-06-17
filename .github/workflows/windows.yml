@@ -9,6 +9,8 @@ on:
             - master
 
 name: Windows build
+permissions:
+    contents: read
 jobs:
     test-windows:
         runs-on: windows-latest
