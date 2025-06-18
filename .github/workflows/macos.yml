@@ -9,6 +9,8 @@ on:
             - master
 
 name: macOS build
+permissions:
+  contents: read
 jobs:
     test-macOS:
         runs-on: ${{ matrix.os }}
