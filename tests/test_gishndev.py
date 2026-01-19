@@ -2,7 +2,6 @@
 
 """Tests for `gishndev` package."""
 
-
 import unittest
 
 from gishndev import gishndev
