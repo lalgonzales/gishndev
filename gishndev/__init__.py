@@ -2,7 +2,7 @@
 
 __author__ = """Luis López"""
 __email__ = "lalgonzales@gmail.com"
-__version__ = "0.0.5"
+__version__ = "0.0.6"
 
 from .common import *
 from .gishndev import *
