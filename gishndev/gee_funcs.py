@@ -2,13 +2,7 @@
 
 import os
 import ee
-import geemap
 import json
-import rasterio
-from shapely.geometry import box
-import geopandas as gpd
-import pandas as pd
-from rasterio.features import shapes
 
 # Obtener la ruta absoluta del directorio actual
 current_dir = os.path.dirname(os.path.abspath(__file__))
@@ -84,30 +78,6 @@ def mask_s2_clouds(img):
 
     # Return the masked image, scaled by 10,000 to get values between 0-1
     return img.updateMask(combined_mask)
-
-
-def create_gdfbounds_from_tif(tif_path):
-    """
-    Creates a GeoDataFrame from the bounds of a TIFF file.
-
-    Args:
-        tif_path (str): Path to the TIFF file.
-
-    Returns:
-        gpd.GeoDataFrame: GeoDataFrame with a polygon representing the bounds of the TIFF file.
-    """
-    # Leer el archivo TIFF
-    with rasterio.open(tif_path) as src:
-        bounds = src.bounds
-        crs = src.crs
-
-    # Crear un polígono a partir de los límites
-    bbox = box(bounds.left, bounds.bottom, bounds.right, bounds.top)
-
-    # Crear un GeoDataFrame
-    gdf = gpd.GeoDataFrame({"geometry": [bbox]}, crs=crs)
-
-    return gdf
 
 
 def apply_scale_factorsL8(img):
@@ -229,116 +199,3 @@ def params_index_s2(index, img):
             band_name = s2_param_bands[param]
             params[param] = img.select(band_name)
     return params
-
-
-def extract_values_to_point_per_part(
-    samples, stack, num_samples, out_dir, out_file_name
-):
-    """
-    Extracts values to points for each part of the samples and saves the output to a specified directory.
-
-    Args:
-        samples (gpd.GeoDataFrame): A GeoDataFrame containing the sample points.
-        stack (ee.Image): The image stack from which to extract values.
-        num_samples (int): The number of samples to process in each part.
-        out_dir (str): The output directory where the results will be saved.
-        out_file_name (str): The base name for the output files.
-    """
-    # Extract the basename of the input samples
-    out_fc_base = f"{out_dir}/{out_file_name}"
-
-    num_parts = (samples.shape[0] // num_samples) + 1
-    for i in range(num_parts):
-        start_idx = i * num_samples
-        end_idx = start_idx + num_samples - 1
-        samples_part = samples.iloc[start_idx:end_idx]
-        samples_part_ee = geemap.geopandas_to_ee(samples_part)
-        geemap.extract_values_to_points(
-            samples_part_ee, stack, scale=10, out_fc=f"{out_fc_base}_{i}.csv"
-        )
-
-
-def get_sampled_size(samples, stack, n_samples):
-    """
-    Get the size of the sampled regions from a stack based on a subset of samples.
-
-    Args:
-        samples (pd.DataFrame): A pandas DataFrame containing the sample points.
-        stack (ee.Image or ee.ImageCollection): An Earth Engine Image or ImageCollection to sample from.
-        n_samples (int): The number of samples to take from the samples DataFrame.
-
-    Returns:
-        int: The size of the sampled regions.
-    """
-    subset = samples.iloc[0:n_samples]
-    subset_ee = geemap.geopandas_to_ee(subset)
-    sampled = stack.sampleRegions(collection=subset_ee, scale=10, geometries=True)
-    return sampled.size().getInfo()
-
-
-def ee_to_df_sampled(samples, stack, n_samples):
-    """
-    Subsets the given samples DataFrame, converts it to an Earth Engine FeatureCollection,
-    samples the given stack Image using the subset, and returns the sampled data as a DataFrame.
-
-    Args:
-        samples (pd.DataFrame): A DataFrame containing the sample points with their respective coordinates.
-        stack (ee.Image): An Earth Engine Image object from which to sample the data.
-        n_samples (int): The number of samples to subset from the samples DataFrame.
-
-    Returns:
-        pd.DataFrame: A DataFrame containing the sampled data with properties from the Earth Engine Image.
-    """
-    subset = samples.iloc[0:n_samples]
-    subset_ee = geemap.geopandas_to_ee(subset)
-    sampled = stack.sampleRegions(collection=subset_ee, scale=10, geometries=True)
-    features = sampled.getInfo()["features"]
-    data = []
-    for feature in features:
-        properties = feature["properties"]
-        data.append(properties)
-    df = pd.DataFrame(data)
-    return df
-
-
-def tif_to_gdf(tif):
-    """
-    Converts a TIFF raster file to a GeoDataFrame.
-
-    This function reads a TIFF file, processes its raster data, and converts it into a GeoDataFrame.
-    The raster data is converted to float32 if it is not in a compatible data type. Only the pixels
-    with values greater than 0 are considered for conversion to geometries.
-
-    Args:
-        tif (str): The file path to the TIFF raster file.
-
-    Returns:
-        gpd.GeoDataFrame: A GeoDataFrame containing the geometries and their associated values extracted from the raster.
-
-    Raises:
-        Exception: If there is an error in reading the TIFF file or converting it to a GeoDataFrame.
-    """
-    # Crear el nombre del archivo tif
-    try:
-        with rasterio.open(tif) as src:
-            image = src.read(1)
-
-            # Convertir el tipo de datos del raster a float32 si no es compatible
-            if image.dtype not in ["int16", "int32", "uint8", "uint16", "float32"]:
-                image = image.astype("float32")
-
-            mask = image > 0
-            results = (
-                {"properties": {"value": v}, "geometry": s}
-                for s, v in shapes(image, mask=mask, transform=src.transform)
-            )
-            geoms = list(results)
-
-        gdf = gpd.GeoDataFrame.from_features(geoms, crs=src.crs)
-        return gdf
-    except Exception as e:
-        print(f"Error al convertir el raster a GeoDataFrame: {e}")
-        raise
-
-
-# other function ..
