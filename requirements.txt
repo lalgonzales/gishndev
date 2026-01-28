@@ -1,8 +1,1 @@
-geemap
-geopandas
-leafmap
-localtileserver
-rasterio
-rioxarray
-setuptools
-shapely
+earthengine-api

@@ -22,6 +22,7 @@ jobs:
                   python -m pip install --upgrade pip
                   pip install --user --no-cache-dir Cython
                   pip install --user -r requirements.txt -r requirements_dev.txt
+                  pip install --user geemap
                   pip install .
 
             - name: Run Earth Engine Script
@@ -29,6 +30,14 @@ jobs:
                   EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
               run: |
                   python .github/ee-test-with-oauth2.py
+
+            - name: Extract EE Project ID
+              id: extract-project
+              env:
+                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+              run: |
+                  PROJECT_ID=$(python -c "import json, os; print(json.loads(os.getenv('EARTHENGINE_TOKEN'))['project'])")
+                  echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
 
             - name: Discover typos with codespell
               run: |
@@ -38,4 +47,7 @@ jobs:
               run: |
                   python -m unittest discover tests/
 
-            - run: mkdocs gh-deploy --force
+            - name: Deploy docs
+              env:
+                  EE_PROJECT_ID: ${{ steps.extract-project.outputs.project_id }}
+              run: mkdocs gh-deploy --force
