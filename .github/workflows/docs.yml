@@ -31,6 +31,14 @@ jobs:
               run: |
                   python .github/ee-test-with-oauth2.py
 
+            - name: Extract EE Project ID
+              id: extract-project
+              env:
+                  EARTHENGINE_TOKEN: ${{ secrets.EARTHENGINE_TOKEN }}
+              run: |
+                  PROJECT_ID=$(python -c "import json, os; print(json.loads(os.getenv('EARTHENGINE_TOKEN'))['project'])")
+                  echo "project_id=$PROJECT_ID" >> $GITHUB_OUTPUT
+
             - name: Discover typos with codespell
               run: |
                   codespell --skip="*.csv,*.geojson,*.json,*.js,*.html,*cff,./.git" --ignore-words-list="aci,hist"
@@ -39,4 +47,7 @@ jobs:
               run: |
                   python -m unittest discover tests/
 
-            - run: mkdocs gh-deploy --force
+            - name: Deploy docs
+              env:
+                  EE_PROJECT_ID: ${{ steps.extract-project.outputs.project_id }}
+              run: mkdocs gh-deploy --force

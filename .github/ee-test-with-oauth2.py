@@ -17,6 +17,6 @@ os.makedirs(credential_file_path, exist_ok=True)
 with open(credential_file_path + "credentials", "w") as file:
     file.write(credentials.to_json())
 
-ee.Initialize(project=stored["project"], credentials=credentials)
+ee.Initialize(credentials=credentials)
 
 print(ee.String("Greetings from the Earth Engine servers!").getInfo())
